@@ -10,8 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
 
 export default function NotFound() {
+  const { t } = useLanguage();
+
   const handleGoBack = () => {
     window.history.back();
   };
@@ -24,11 +27,10 @@ export default function NotFound() {
             <FileQuestion className="w-8 h-8 text-violet-600" />
           </div>
           <CardTitle className="text-2xl font-heading">
-            Page Not Found
+            {t.status.notFoundTitle}
           </CardTitle>
           <CardDescription className="text-base">
-            The page you&apos;re looking for doesn&apos;t exist or has been
-            moved.
+            {t.status.notFoundDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -39,7 +41,7 @@ export default function NotFound() {
             <Button asChild className="flex-1 gap-2" size="lg">
               <Link href="/">
                 <Home className="w-4 h-4" />
-                Go Home
+                {t.status.goHome}
               </Link>
             </Button>
             <Button
@@ -49,11 +51,11 @@ export default function NotFound() {
               onClick={handleGoBack}
             >
               <ArrowLeft className="w-4 h-4" />
-              Go Back
+              {t.status.goBack}
             </Button>
           </div>
           <p className="text-xs text-center text-muted-foreground">
-            Need help? Visit our help center or contact support
+            {t.status.notFoundHelp}
           </p>
         </CardContent>
       </Card>

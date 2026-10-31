@@ -4,8 +4,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Chrome } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageToggle } from "@/components/language-toggle";
 
 const LoginAndSignUpPage = () => {
+  const { t } = useLanguage();
+
   const handleGoogleLogin = () => {
     // TODO: Implement Google OAuth later
     console.log("Google login clicked");
@@ -22,6 +26,10 @@ const LoginAndSignUpPage = () => {
         }}
       />
 
+      <div className="absolute right-4 top-4 z-20">
+        <LanguageToggle />
+      </div>
+
       {/* Login Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -35,14 +43,14 @@ const LoginAndSignUpPage = () => {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block mb-6">
               <h1 className="text-3xl sm:text-4xl font-black text-black">
-                SheCan
+                {t.common.appName}
               </h1>
             </Link>
             <h2 className="text-2xl sm:text-3xl font-bold text-black mb-2">
-              Welcome Back
+              {t.login.welcomeBack}
             </h2>
             <p className="text-sm sm:text-base text-black/60">
-              Sign in to continue your entrepreneurial journey
+              {t.login.subtitle}
             </p>
           </div>
 
@@ -55,7 +63,7 @@ const LoginAndSignUpPage = () => {
             className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border-2 border-black rounded-xl font-bold text-black hover:bg-black hover:text-white transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
           >
             <Chrome className="w-5 h-5" />
-            <span>Continue with Google</span>
+            <span>{t.login.continueWithGoogle}</span>
           </motion.button>
          </Link>
 
@@ -66,18 +74,14 @@ const LoginAndSignUpPage = () => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-black/60 font-medium">
-                Quick & Secure
+                {t.login.quickSecure}
               </span>
             </div>
           </div>
 
           {/* Benefits */}
           <div className="space-y-3 mb-6">
-            {[
-              "AI-powered business tools",
-              "Connect with mentors",
-              "Build your online store",
-            ].map((benefit, index) => (
+            {Object.values(t.login.benefits).map((benefit, index) => (
               <motion.div
                 key={benefit}
                 initial={{ opacity: 0, x: -20 }}
@@ -107,13 +111,13 @@ const LoginAndSignUpPage = () => {
 
           {/* Terms */}
           <p className="text-xs text-center text-black/50 leading-relaxed">
-            By continuing, you agree to our{" "}
+            {t.login.termsPrefix}{" "}
             <Link href="/terms" className="underline hover:text-black">
-              Terms of Service
+              {t.login.termsOfService}
             </Link>{" "}
-            and{" "}
+            {t.login.and}{" "}
             <Link href="/privacy" className="underline hover:text-black">
-              Privacy Policy
+              {t.login.privacyPolicy}
             </Link>
           </p>
         </div>
@@ -142,7 +146,7 @@ const LoginAndSignUpPage = () => {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Back to Home
+            {t.login.backHome}
           </Link>
         </motion.div>
       </motion.div>

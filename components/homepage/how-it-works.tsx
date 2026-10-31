@@ -10,47 +10,42 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 const steps = [
   {
     number: "01",
-    title: "Sign Up & Profile",
-    description:
-      "Create your account and tell us about your skills, interests, and business goals. Our AI will understand your unique strengths.",
+    key: "signUp",
     icon: UserCircle,
     color: "from-violet-500 to-purple-600",
     dotColor: "bg-violet-500",
   },
   {
     number: "02",
-    title: "Get AI Features",
-    description:
-      "Receive personalized business ideas, pricing strategies, and design suggestions powered by our intelligent algorithms.",
+    key: "aiFeatures",
     icon: Lightbulb,
     color: "from-blue-500 to-cyan-600",
     dotColor: "bg-blue-500",
   },
   {
     number: "03",
-    title: "Build Your Store",
-    description:
-      "Use our drag-and-drop store builder to create your online presence. Add products, customize themes, and set up payments.",
+    key: "buildStore",
     icon: Store,
     color: "from-pink-500 to-rose-600",
     dotColor: "bg-pink-500",
   },
   {
     number: "04",
-    title: "Launch & Grow",
-    description:
-      "Go live with your business! Connect with mentors, track analytics, and scale your venture with our comprehensive tools.",
+    key: "launchGrow",
     icon: Rocket,
     color: "from-orange-500 to-amber-600",
     dotColor: "bg-orange-500",
   },
-];
+] as const;
 
 const HowItWorksSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative py-20 px-4 overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -71,16 +66,16 @@ const HowItWorksSection = () => {
           >
             <CheckCircle2 className="w-4 h-4 text-violet-600" />
             <span className="text-sm font-medium text-black/70">
-              Simple Process
+              {t.howItWorks.badge}
             </span>
           </motion.div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4">
-            How <span className="italic">It Works</span>
+            {t.howItWorks.title}{" "}
+            <span className="italic">{t.howItWorks.titleAccent}</span>
           </h2>
           <p className="text-base sm:text-lg text-black/70 max-w-2xl mx-auto px-4">
-            Get started in 4 simple steps and transform your entrepreneurial
-            dreams into reality
+            {t.howItWorks.subtitle}
           </p>
         </motion.div>
 
@@ -88,6 +83,7 @@ const HowItWorksSection = () => {
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12">
           {steps.map((step, index) => {
             const Icon = step.icon;
+            const copy = t.howItWorks.steps[step.key];
             return (
               <motion.div
                 key={step.number}
@@ -118,10 +114,10 @@ const HowItWorksSection = () => {
 
                   {/* Content */}
                   <h3 className="text-xl font-bold text-black mb-3">
-                    {step.title}
+                    {copy.title}
                   </h3>
                   <p className="text-sm text-black/60 leading-relaxed">
-                    {step.description}
+                    {copy.description}
                   </p>
 
                   {/* Hover Indicator */}
@@ -138,6 +134,7 @@ const HowItWorksSection = () => {
         <div className="md:hidden space-y-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
+            const copy = t.howItWorks.steps[step.key];
             return (
               <motion.div
                 key={step.number}
@@ -167,10 +164,10 @@ const HowItWorksSection = () => {
                 {/* Content Card */}
                 <div className="flex-1 bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-black/10 shadow-lg">
                   <h3 className="text-lg font-bold text-black mb-2">
-                    {step.title}
+                    {copy.title}
                   </h3>
                   <p className="text-sm text-black/60 leading-relaxed">
-                    {step.description}
+                    {copy.description}
                   </p>
                 </div>
               </motion.div>

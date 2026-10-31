@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Navbar from './navbar';
+import { useLanguage } from "@/components/language-provider";
 
 const HeroSection = () => {
+  const { t } = useLanguage();
+
   return (
      <div className="min-h-screen w-full relative">
       {/* Radial Gradient Background from Top */}
@@ -39,10 +42,8 @@ const HeroSection = () => {
             className="px-3 py-1.5 sm:px-5 sm:py-2 text-xs sm:text-sm font-medium bg-black/90 text-white border-0 shadow-xl backdrop-blur-sm"
           >
             <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1.5 sm:mr-2 inline-block" />
-            <span className="hidden xs:inline">
-              Empowering Women Entrepreneurs Across India
-            </span>
-            <span className="xs:hidden">Empowering Women Entrepreneurs</span>
+            <span className="hidden xs:inline">{t.hero.badgeLong}</span>
+            <span className="xs:hidden">{t.hero.badgeShort}</span>
           </Badge>
         </motion.div>
 
@@ -57,9 +58,9 @@ const HeroSection = () => {
             ease: [0.16, 1, 0.3, 1],
           }}
         >
-          Turn Your Skills <br />
-          <span className="italic font-bold">Into A Thriving</span> <br />
-          Business
+          {t.hero.titleLine1} <br />
+          <span className="italic font-bold">{t.hero.titleLine2}</span> <br />
+          {t.hero.titleLine3}
         </motion.h1>
 
         {/* Subheading */}
@@ -73,9 +74,7 @@ const HeroSection = () => {
             ease: [0.16, 1, 0.3, 1],
           }}
         >
-          AI-powered toolkit designed for women entrepreneurs. Get business
-          ideas, build your store, predict pricing, and connect with mentors—all
-          in one place.
+          {t.hero.subtitle}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -100,7 +99,7 @@ const HeroSection = () => {
               asChild
             >
               <Link href="/dashboard">
-                Get Started
+                {t.hero.getStarted}
                 <motion.div
                   className="ml-2 inline-block"
                   animate={{ x: [0, 5, 0] }}
@@ -127,7 +126,7 @@ const HeroSection = () => {
               className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base font-semibold border-2 border-black text-black hover:bg-black hover:text-white transition-colors"
               asChild
             >
-              <Link href="#features">Explore Features</Link>
+              <Link href="#features">{t.hero.exploreFeatures}</Link>
             </Button>
           </motion.div>
         </motion.div>

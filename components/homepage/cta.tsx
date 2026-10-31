@@ -4,8 +4,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
 
 const CTA = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative py-32 px-4 overflow-hidden">
       <div className="relative z-10 max-w-4xl mx-auto text-center">
@@ -18,14 +21,14 @@ const CTA = () => {
         >
           {/* Heading */}
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-6 leading-tight">
-            Ready to start your
+            {t.cta.titleLine1}
             <br />
-            <span className="italic">entrepreneurial journey?</span>
+            <span className="italic">{t.cta.titleLine2}</span>
           </h2>
 
           {/* Subtext */}
           <p className="text-lg sm:text-xl text-black/60 mb-12 max-w-2xl mx-auto px-4">
-            Join thousands of women building successful businesses today
+            {t.cta.subtitle}
           </p>
 
           {/* CTA Button */}
@@ -37,7 +40,7 @@ const CTA = () => {
               href="/dashboard"
               className="inline-flex items-center gap-3 px-6 py-3 bg-black text-white text-lg font-semibold rounded-md shadow-2xl hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-300 group"
             >
-              Get Started Free
+              {t.cta.button}
               <motion.div
                 animate={{ x: [0, 5, 0] }}
                 transition={{

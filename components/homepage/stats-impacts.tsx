@@ -11,12 +11,14 @@ import {
   Heart,
   Sparkles,
 } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
+import { LOCALES } from "@/lib/translations";
 
 interface Stat {
   icon: React.ElementType;
   value: number;
   suffix: string;
-  label: string;
+  labelKey: "womenEmpowered" | "businessesLaunched" | "revenueGenerated" | "citiesReached";
   color: string;
   gradient: string;
 }
@@ -26,7 +28,7 @@ const stats: Stat[] = [
     icon: Users,
     value: 10000,
     suffix: "+",
-    label: "Women Empowered",
+    labelKey: "womenEmpowered",
     color: "text-violet-600",
     gradient: "from-violet-500 to-purple-600",
   },
@@ -34,7 +36,7 @@ const stats: Stat[] = [
     icon: Store,
     value: 5000,
     suffix: "+",
-    label: "Businesses Launched",
+    labelKey: "businessesLaunched",
     color: "text-blue-600",
     gradient: "from-blue-500 to-cyan-600",
   },
@@ -42,7 +44,7 @@ const stats: Stat[] = [
     icon: TrendingUp,
     value: 2,
     suffix: "Cr+",
-    label: "Revenue Generated",
+    labelKey: "revenueGenerated",
     color: "text-green-600",
     gradient: "from-green-500 to-emerald-600",
   },
@@ -50,7 +52,7 @@ const stats: Stat[] = [
     icon: Globe,
     value: 500,
     suffix: "+",
-    label: "Cities Reached",
+    labelKey: "citiesReached",
     color: "text-orange-600",
     gradient: "from-orange-500 to-amber-600",
   },
@@ -59,20 +61,17 @@ const stats: Stat[] = [
 const impacts = [
   {
     icon: Heart,
-    title: "Financial Independence",
-    description: "Helping women achieve economic self-reliance and dignity",
+    key: "financialIndependence",
   },
   {
     icon: Award,
-    title: "Skill Development",
-    description: "Upskilling entrepreneurs with modern digital tools",
+    key: "skillDevelopment",
   },
   {
     icon: Sparkles,
-    title: "Community Building",
-    description: "Creating supportive networks of women entrepreneurs",
+    key: "communityBuilding",
   },
-];
+] as const;
 
 // Animated Counter Component
 function AnimatedCounter({
@@ -82,6 +81,7 @@ function AnimatedCounter({
   value: number;
   duration?: number;
 }) {
+  const { language } = useLanguage();
   const ref = React.useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, {
@@ -97,19 +97,23 @@ function AnimatedCounter({
   }, [isInView, motionValue, value]);
 
   React.useEffect(() => {
-    springValue.on("change", (latest) => {
+    const unsubscribe = springValue.on("change", (latest) => {
       if (ref.current) {
-        ref.current.textContent = Intl.NumberFormat("en-IN").format(
+        ref.current.textContent = Intl.NumberFormat(LOCALES[language]).format(
           Math.floor(latest)
         );
       }
     });
-  }, [springValue]);
+
+    return unsubscribe;
+  }, [springValue, language]);
 
   return <span ref={ref}>0</span>;
 }
 
 const StatsImpactsSection = () => {
+  const { t, language } = useLanguage();
+
   return (
     <section className="relative py-20 px-4 overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -130,16 +134,16 @@ const StatsImpactsSection = () => {
           >
             <TrendingUp className="w-4 h-4 text-violet-600" />
             <span className="text-sm font-medium text-black/70">
-              Our Impact
+              {t.stats.badge}
             </span>
           </motion.div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4">
-            Creating <span className="italic">Real Change</span>
+            {t.stats.title}{" "}
+            <span className="italic">{t.stats.titleAccent}</span>
           </h2>
           <p className="text-base sm:text-lg text-black/70 max-w-2xl mx-auto px-4">
-            Empowering women across India to build sustainable businesses and
-            achieve financial independence
+            {t.stats.subtitle}
           </p>
         </motion.div>
 
@@ -149,7 +153,7 @@ const StatsImpactsSection = () => {
             const Icon = stat.icon;
             return (
               <motion.div
-                key={stat.label}
+                key={stat.labelKey}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -177,14 +181,16 @@ const StatsImpactsSection = () => {
                     <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-black flex items-baseline gap-1">
                       <AnimatedCounter value={stat.value} />
                       <span className={`text-2xl sm:text-3xl ${stat.color}`}>
-                        {stat.suffix}
+                        {language === "hi" && stat.labelKey === "revenueGenerated"
+                          ? "करोड़+"
+                          : stat.suffix}
                       </span>
                     </div>
                   </div>
 
                   {/* Label */}
                   <p className="relative z-10 text-sm sm:text-base text-black/60 font-medium">
-                    {stat.label}
+                    {t.stats.items[stat.labelKey]}
                   </p>
 
                   {/* Bottom Accent Line */}
@@ -211,9 +217,10 @@ const StatsImpactsSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                 {impacts.map((impact, index) => {
                   const Icon = impact.icon;
+                  const copy = t.stats.impacts[impact.key];
                   return (
                     <motion.div
-                      key={impact.title}
+                      key={impact.key}
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
                       viewport={{ once: true }}
@@ -230,10 +237,10 @@ const StatsImpactsSection = () => {
 
                       {/* Content */}
                       <h3 className="text-lg sm:text-xl font-bold text-black mb-2">
-                        {impact.title}
+                        {copy.title}
                       </h3>
                       <p className="text-sm sm:text-base text-black/60 leading-relaxed">
-                        {impact.description}
+                        {copy.description}
                       </p>
                     </motion.div>
                   );
@@ -252,8 +259,7 @@ const StatsImpactsSection = () => {
           className="text-center mt-12"
         >
           <blockquote className="text-lg sm:text-xl md:text-2xl font-medium text-black/80 italic max-w-3xl mx-auto px-4">
-            &ldquo;Every woman has the potential to be an entrepreneur. We&apos;re here to
-            unlock that potential.&rdquo;
+            &ldquo;{t.stats.quote}&rdquo;
           </blockquote>
         </motion.div>
       </div>

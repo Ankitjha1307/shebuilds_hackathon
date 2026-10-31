@@ -4,16 +4,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageToggle } from "@/components/language-toggle";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Features", href: "#features" },
-    { name: "Events", href: "/events" },
-    { name: "Contact", href: "/contact" },
+    { key: "home", href: "/" },
+    { key: "about", href: "/about" },
+    { key: "features", href: "#features" },
+    { key: "events", href: "/events" },
+    { key: "contact", href: "/contact" },
   ];
 
   return (
@@ -25,7 +28,7 @@ const Navbar = () => {
             {/* Brand Name */}
             <Link href="/" className="group">
               <span className="text-xl sm:text-2xl font-black text-black group-hover:translate-x-1 transition-transform inline-block">
-                SheCan
+                {t.common.appName}
               </span>
             </Link>
 
@@ -33,22 +36,23 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-1 lg:gap-2">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.key}
                   href={link.href}
                   className="px-3 lg:px-4 py-2 text-sm font-bold text-black hover:bg-black hover:text-white rounded-lg transition-all duration-200"
                 >
-                  {link.name}
+                  {t.navbar[link.key]}
                 </Link>
               ))}
             </div>
 
             {/* CTA Button */}
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-3">
+              <LanguageToggle />
               <Link
                 href="/login"
                 className="px-4 lg:px-6 py-2 text-sm font-bold text-white bg-black rounded-lg hover:bg-black/90 transition-all duration-200 shadow-[3px_3px_0px_0px_rgba(124,58,237,1)] hover:shadow-[5px_5px_0px_0px_rgba(124,58,237,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
               >
-                Get Started
+                {t.navbar.getStarted}
               </Link>
             </div>
 
@@ -77,21 +81,24 @@ const Navbar = () => {
             <div className="p-4 space-y-2">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.key}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-3 text-sm font-bold text-black hover:bg-black hover:text-white rounded-lg transition-all duration-200"
                 >
-                  {link.name}
+                  {t.navbar[link.key]}
                 </Link>
               ))}
+              <div className="flex justify-center pt-2">
+                <LanguageToggle />
+              </div>
               <div className="pt-2">
                 <Link
                   href="/login"
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-3 text-sm font-bold text-white bg-black rounded-lg text-center shadow-[3px_3px_0px_0px_rgba(124,58,237,1)] transition-all duration-200"
                 >
-                  Get Started
+                  {t.navbar.getStarted}
                 </Link>
               </div>
             </div>

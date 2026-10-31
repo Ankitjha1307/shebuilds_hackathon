@@ -9,59 +9,58 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BookOpen, Clock, Award, Play, Lock, CheckCircle2, TrendingUp, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { useLanguage } from '@/components/language-provider'
 
-const COURSES = [
+interface Course {
+  id: number
+  key:
+    | 'businessFundamentals'
+    | 'digitalMarketing'
+    | 'financialManagement'
+    | 'ecommerce'
+  lessons: number
+  progress: number
+  enrolled: number
+  locked: boolean
+}
+
+const COURSES: Course[] = [
   {
     id: 1,
-    title: 'Business Fundamentals',
-    description: 'Learn the basics of starting and running a successful business',
-    duration: '4 hours',
+    key: 'businessFundamentals',
     lessons: 12,
-    level: 'Beginner',
     progress: 75,
     enrolled: 1234,
-    category: 'Business',
     locked: false
   },
   {
     id: 2,
-    title: 'Digital Marketing Mastery',
-    description: 'Master social media, SEO, and online advertising strategies',
-    duration: '6 hours',
+    key: 'digitalMarketing',
     lessons: 18,
-    level: 'Intermediate',
     progress: 30,
     enrolled: 892,
-    category: 'Marketing',
     locked: false
   },
   {
     id: 3,
-    title: 'Financial Management',
-    description: 'Understand accounting, budgeting, and financial planning',
-    duration: '5 hours',
+    key: 'financialManagement',
     lessons: 15,
-    level: 'Intermediate',
     progress: 0,
     enrolled: 756,
-    category: 'Finance',
     locked: false
   },
   {
     id: 4,
-    title: 'E-commerce Excellence',
-    description: 'Build and scale your online store on multiple platforms',
-    duration: '7 hours',
+    key: 'ecommerce',
     lessons: 20,
-    level: 'Advanced',
     progress: 0,
     enrolled: 543,
-    category: 'E-commerce',
     locked: true
   },
 ]
 
 export default function CoursesPage() {
+  const { t } = useLanguage()
   const [filter, setFilter] = useState('all')
 
   const filteredCourses = COURSES.filter(course => 
@@ -91,17 +90,19 @@ export default function CoursesPage() {
           <div className="relative z-10">
             <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
               <BookOpen className="w-8 h-8 text-main" />
-              Learning Courses
+              {t.learningCourses.title}
             </h1>
-            <p className="text-foreground/70 mt-2">Gamified learning paths to grow your skills</p>
+            <p className="text-foreground/70 mt-2">
+              {t.learningCourses.subtitle}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="neutral" className="text-sm">
               <Award className="w-4 h-4 mr-1" />
-              850 Points
+              {t.learningCourses.points(850)}
             </Badge>
             <Badge variant="neutral" className="text-sm">
-              Level 5
+              {t.learningCourses.level(5)}
             </Badge>
           </div>
         </div>
@@ -109,10 +110,10 @@ export default function CoursesPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: BookOpen, value: '12', label: 'Courses', color: 'main' },
-            { icon: CheckCircle2, value: '3', label: 'Completed', color: 'chart-2' },
-            { icon: Clock, value: '24h', label: 'Learning Time', color: 'chart-3' },
-            { icon: Award, value: '8', label: 'Certificates', color: 'chart-4' },
+            { icon: BookOpen, value: '12', label: t.learningCourses.stats.courses, color: 'main' },
+            { icon: CheckCircle2, value: '3', label: t.learningCourses.stats.completed, color: 'chart-2' },
+            { icon: Clock, value: '24h', label: t.learningCourses.stats.learningTime, color: 'chart-3' },
+            { icon: Award, value: '8', label: t.learningCourses.stats.certificates, color: 'chart-4' },
           ].map((stat, idx) => (
             <motion.div
               key={idx}
@@ -138,15 +139,22 @@ export default function CoursesPage() {
         {/* Filters */}
         <Tabs value={filter} onValueChange={setFilter} className="w-full">
           <TabsList className="grid w-full md:w-[400px] grid-cols-3">
-            <TabsTrigger value="all">All Courses</TabsTrigger>
-            <TabsTrigger value="enrolled">In Progress</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="all">{t.learningCourses.filters.all}</TabsTrigger>
+            <TabsTrigger value="enrolled">
+              {t.learningCourses.filters.inProgress}
+            </TabsTrigger>
+            <TabsTrigger value="completed">
+              {t.learningCourses.filters.completed}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Courses Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          {filteredCourses.map((course, idx) => (
+          {filteredCourses.map((course, idx) => {
+            const copy = t.learningCourses.items[course.key]
+
+            return (
             <motion.div
               key={course.id}
               initial={{ opacity: 0, y: 20 }}
@@ -165,20 +173,22 @@ export default function CoursesPage() {
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-xl font-bold">{course.title}</h3>
-                      <Badge variant="neutral">{course.level}</Badge>
+                      <h3 className="text-xl font-bold">{copy.title}</h3>
+                      <Badge variant="neutral">{copy.level}</Badge>
                     </div>
-                    <p className="text-sm text-foreground/70">{course.description}</p>
+                    <p className="text-sm text-foreground/70">
+                      {copy.description}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-4 text-sm text-foreground/70">
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      {course.duration}
+                      {copy.duration}
                     </div>
                     <div className="flex items-center gap-1">
                       <BookOpen className="w-4 h-4" />
-                      {course.lessons} lessons
+                      {t.learningCourses.lessons(course.lessons)}
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
@@ -189,7 +199,9 @@ export default function CoursesPage() {
                   {course.progress > 0 && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-foreground/70">Progress</span>
+                        <span className="text-foreground/70">
+                          {t.learningCourses.progress}
+                        </span>
                         <span className="font-medium">{course.progress}%</span>
                       </div>
                       <Progress value={course.progress} className="h-2" />
@@ -202,17 +214,27 @@ export default function CoursesPage() {
                     variant={course.progress > 0 ? 'default' : 'neutral'}
                   >
                     {course.locked ? (
-                      <><Lock className="w-4 h-4 mr-2" /> Unlock at Level 10</>
+                      <>
+                        <Lock className="w-4 h-4 mr-2" />{" "}
+                        {t.learningCourses.unlockAtLevel(10)}
+                      </>
                     ) : course.progress > 0 ? (
-                      <><Play className="w-4 h-4 mr-2" /> Continue Learning</>
+                      <>
+                        <Play className="w-4 h-4 mr-2" />{" "}
+                        {t.learningCourses.continueLearning}
+                      </>
                     ) : (
-                      <><Play className="w-4 h-4 mr-2" /> Start Course</>
+                      <>
+                        <Play className="w-4 h-4 mr-2" />{" "}
+                        {t.learningCourses.startCourse}
+                      </>
                     )}
                   </Button>
                 </div>
               </Card>
             </motion.div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

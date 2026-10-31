@@ -14,11 +14,19 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
 
 interface Feature {
   icon: LucideIcon;
-  title: string;
-  description: string;
+  key:
+    | "ideaGenerator"
+    | "storeBuilder"
+    | "smartPricing"
+    | "designGenerator"
+    | "mentorConnect"
+    | "learningHub"
+    | "marketInsights"
+    | "quickLaunch";
   color: string;
   gradient: string;
 }
@@ -26,71 +34,57 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: Sparkles,
-    title: "AI Idea Generator",
-    description:
-      "Get personalized business ideas based on your skills, interests, and local market demand.",
+    key: "ideaGenerator",
     color: "text-violet-600",
     gradient: "from-violet-500/20 to-purple-500/20",
   },
   {
     icon: Store,
-    title: "Store Builder",
-    description:
-      "Create your own online store in minutes with customizable templates and themes.",
+    key: "storeBuilder",
     color: "text-blue-600",
     gradient: "from-blue-500/20 to-cyan-500/20",
   },
   {
     icon: Calculator,
-    title: "Smart Pricing",
-    description:
-      "AI-powered pricing recommendations based on costs, competition, and market analysis.",
+    key: "smartPricing",
     color: "text-green-600",
     gradient: "from-green-500/20 to-emerald-500/20",
   },
   {
     icon: Palette,
-    title: "Design Generator",
-    description:
-      "Generate professional logos, labels, and marketing materials with AI assistance.",
+    key: "designGenerator",
     color: "text-pink-600",
     gradient: "from-pink-500/20 to-rose-500/20",
   },
   {
     icon: Users,
-    title: "Mentor Connect",
-    description:
-      "Connect with experienced entrepreneurs and get guidance for your business journey.",
+    key: "mentorConnect",
     color: "text-orange-600",
     gradient: "from-orange-500/20 to-amber-500/20",
   },
   {
     icon: BookOpen,
-    title: "Learning Hub",
-    description:
-      "Access courses, tutorials, and resources to develop business and digital skills.",
+    key: "learningHub",
     color: "text-indigo-600",
     gradient: "from-indigo-500/20 to-purple-500/20",
   },
   {
     icon: TrendingUp,
-    title: "Market Insights",
-    description:
-      "Get real-time market trends, demand forecasts, and competitive analysis.",
+    key: "marketInsights",
     color: "text-teal-600",
     gradient: "from-teal-500/20 to-cyan-500/20",
   },
   {
     icon: Zap,
-    title: "Quick Launch",
-    description:
-      "Launch your business fast with automated workflows and ready-to-use templates.",
+    key: "quickLaunch",
     color: "text-yellow-600",
     gradient: "from-yellow-500/20 to-orange-500/20",
   },
 ];
 
 const FeaturesSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section id="#features" className="relative py-20 px-4 overflow-hidden bg-white">
       {/* Background Grid Pattern */}
@@ -114,16 +108,16 @@ const FeaturesSection = () => {
           >
             <Zap className="w-4 h-4 text-violet-600" />
             <span className="text-sm font-medium text-black/70">
-              Everything You Need
+              {t.features.badge}
             </span>
           </motion.div>
 
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black mb-4">
-            Powerful Features for <span className="italic">Your Success</span>
+            {t.features.title}{" "}
+            <span className="italic">{t.features.titleAccent}</span>
           </h2>
           <p className="text-lg text-black/60 max-w-2xl mx-auto">
-            All-in-one platform with AI-powered tools designed specifically for
-            women entrepreneurs
+            {t.features.subtitle}
           </p>
         </motion.div>
 
@@ -131,9 +125,10 @@ const FeaturesSection = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-black/10 border border-black/10 rounded-2xl overflow-hidden">
           {features.map((feature, index) => {
             const Icon = feature.icon;
+            const copy = t.features.items[feature.key];
             return (
               <motion.div
-                key={feature.title}
+                key={feature.key}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -160,12 +155,12 @@ const FeaturesSection = () => {
 
                   {/* Title */}
                   <h3 className="text-xl font-bold text-black mb-3 group-hover:text-black transition-colors">
-                    {feature.title}
+                    {copy.title}
                   </h3>
 
                   {/* Description */}
                   <p className="text-sm text-black/60 leading-relaxed group-hover:text-black/70 transition-colors">
-                    {feature.description}
+                    {copy.description}
                   </p>
 
                   {/* Hover Arrow */}
@@ -174,7 +169,7 @@ const FeaturesSection = () => {
                     whileHover={{ opacity: 1, x: 0 }}
                     className="mt-4 flex items-center gap-2 text-sm font-semibold text-black/40 group-hover:text-black transition-colors"
                   >
-                    <span>Learn more</span>
+                    <span>{t.features.learnMore}</span>
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -210,15 +205,13 @@ const FeaturesSection = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center mt-16"
         >
-          <p className="text-black/60 mb-6">
-            Ready to transform your skills into a successful business?
-          </p>
+          <p className="text-black/60 mb-6">{t.features.bottomText}</p>
           <Link href={"/dashboard"}>
           <motion.button
             whileTap={{ scale: 0.95 }}
             className="px-6 py-3.5 bg-black text-white font-semibold rounded-md shadow-xl hover:shadow-2xl transition-shadow inline-flex items-center gap-2"
           >
-            Get Started for Free
+            {t.features.cta}
             <svg
               className="w-5 h-5"
               fill="none"

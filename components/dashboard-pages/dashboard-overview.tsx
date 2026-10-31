@@ -57,6 +57,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
+import { useLanguage } from "@/components/language-provider";
 
 interface Stat {
   title: string;
@@ -71,21 +72,26 @@ interface Activity {
   id: number;
   user: string;
   action: string;
-  product: string | null;
-  time: string;
+  productKey:
+    | "handmadeJewelry"
+    | "organicSkincare"
+    | "cottonSaree"
+    | "homeDecorSet"
+    | null;
+  timeKey: "twoHoursAgo" | "fiveHoursAgo" | "oneDayAgo" | "twoDaysAgo";
   avatar: string;
   amount?: string;
 }
 
 interface Course {
-  course: string;
+  courseKey: "businessFundamentals" | "digitalMarketingPro" | "financialManagement";
   progress: number;
   students: number;
 }
 
 interface Product {
   id: number;
-  name: string;
+  nameKey: "handmadeJewelry" | "organicSkincare" | "premiumCottonSarees" | "artisanHomeDecor";
   status: "Active" | "Draft" | "Inactive";
   sales: number;
   revenue: string;
@@ -94,70 +100,82 @@ interface Product {
 }
 
 const revenueData = [
-  { month: "January", revenue: 12000, orders: 45 },
-  { month: "February", revenue: 15000, orders: 52 },
-  { month: "March", revenue: 18000, orders: 61 },
-  { month: "April", revenue: 22000, orders: 73 },
-  { month: "May", revenue: 28000, orders: 89 },
-  { month: "June", revenue: 35000, orders: 102 },
-];
+  { monthKey: "january", revenue: 12000, orders: 45 },
+  { monthKey: "february", revenue: 15000, orders: 52 },
+  { monthKey: "march", revenue: 18000, orders: 61 },
+  { monthKey: "april", revenue: 22000, orders: 73 },
+  { monthKey: "may", revenue: 28000, orders: 89 },
+  { monthKey: "june", revenue: 35000, orders: 102 },
+] as const;
 
 const salesData = [
-  { category: "Jewelry", sales: 4200 },
-  { category: "Skincare", sales: 3800 },
-  { category: "Textiles", sales: 3200 },
-  { category: "Home Decor", sales: 2900 },
-  { category: "Accessories", sales: 2400 },
-];
-
-const revenueChartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "hsl(280, 80%, 65%)",
-  },
-  orders: {
-    label: "Orders",
-    color: "hsl(320, 75%, 70%)",
-  },
-} satisfies ChartConfig;
-
-const salesChartConfig = {
-  sales: {
-    label: "Sales",
-    color: "hsl(260, 70%, 60%)",
-  },
-} satisfies ChartConfig;
+  { categoryKey: "jewelry", sales: 4200 },
+  { categoryKey: "skincare", sales: 3800 },
+  { categoryKey: "textiles", sales: 3200 },
+  { categoryKey: "homeDecor", sales: 2900 },
+  { categoryKey: "accessories", sales: 2400 },
+] as const;
 
 export default function DashboardOverview() {
+  const { t } = useLanguage();
+
+  const revenueChartConfig = {
+    revenue: {
+      label: t.dashboard.table.revenue,
+      color: "hsl(280, 80%, 65%)",
+    },
+    orders: {
+      label: t.dashboard.stats.totalOrders,
+      color: "hsl(320, 75%, 70%)",
+    },
+  } satisfies ChartConfig;
+
+  const salesChartConfig = {
+    sales: {
+      label: t.dashboard.table.sales,
+      color: "hsl(260, 70%, 60%)",
+    },
+  } satisfies ChartConfig;
+
+  const localizedRevenueData = revenueData.map((item) => ({
+    ...item,
+    month: t.dashboard.months[item.monthKey],
+  }));
+
+  const localizedSalesData = salesData.map((item) => ({
+    ...item,
+    category: t.dashboard.categories[item.categoryKey],
+  }));
+
   const stats: Stat[] = [
     {
-      title: "Total Revenue",
+      title: t.dashboard.stats.totalRevenue,
       value: "₹1,45,231",
-      change: "from last month",
+      change: t.dashboard.stats.fromLastMonth,
       icon: DollarSign,
       trend: "up",
       percentage: 20.1,
     },
     {
-      title: "Active Products",
+      title: t.dashboard.stats.activeProducts,
       value: "24",
-      change: "from last month",
+      change: t.dashboard.stats.fromLastMonth,
       icon: ShoppingBag,
       trend: "up",
       percentage: 12.5,
     },
     {
-      title: "Total Orders",
+      title: t.dashboard.stats.totalOrders,
       value: "412",
-      change: "from last month",
+      change: t.dashboard.stats.fromLastMonth,
       icon: Package,
       trend: "up",
       percentage: 8.3,
     },
     {
-      title: "Avg. Rating",
+      title: t.dashboard.stats.avgRating,
       value: "4.8",
-      change: "from last month",
+      change: t.dashboard.stats.fromLastMonth,
       icon: Star,
       trend: "up",
       percentage: 5.2,
@@ -168,49 +186,49 @@ export default function DashboardOverview() {
     {
       id: 1,
       user: "Priya Sharma",
-      action: "purchased",
-      product: "Handmade Jewelry",
-      time: "2h ago",
+      action: t.dashboard.actions.purchased,
+      productKey: "handmadeJewelry",
+      timeKey: "twoHoursAgo",
       avatar: "PS",
       amount: "₹2,499",
     },
     {
       id: 2,
       user: "Anita Desai",
-      action: "reviewed",
-      product: "Organic Skincare",
-      time: "5h ago",
+      action: t.dashboard.actions.reviewed,
+      productKey: "organicSkincare",
+      timeKey: "fiveHoursAgo",
       avatar: "AD",
     },
     {
       id: 3,
       user: "Meera Patel",
-      action: "purchased",
-      product: "Cotton Saree",
-      time: "1d ago",
+      action: t.dashboard.actions.purchased,
+      productKey: "cottonSaree",
+      timeKey: "oneDayAgo",
       avatar: "MP",
       amount: "₹3,999",
     },
     {
       id: 4,
       user: "Kavita Singh",
-      action: "added to cart",
-      product: "Home Decor Set",
-      time: "2d ago",
+      action: t.dashboard.actions.addedToCart,
+      productKey: "homeDecorSet",
+      timeKey: "twoDaysAgo",
       avatar: "KS",
     },
   ];
 
   const learningProgress: Course[] = [
-    { course: "Business Fundamentals", progress: 85, students: 234 },
-    { course: "Digital Marketing Pro", progress: 60, students: 189 },
-    { course: "Financial Management", progress: 40, students: 156 },
+    { courseKey: "businessFundamentals", progress: 85, students: 234 },
+    { courseKey: "digitalMarketingPro", progress: 60, students: 189 },
+    { courseKey: "financialManagement", progress: 40, students: 156 },
   ];
 
   const products: Product[] = [
     {
       id: 1,
-      name: "Handmade Jewelry Collection",
+      nameKey: "handmadeJewelry",
       status: "Active",
       sales: 145,
       revenue: "₹52,500",
@@ -219,7 +237,7 @@ export default function DashboardOverview() {
     },
     {
       id: 2,
-      name: "Organic Skincare Bundle",
+      nameKey: "organicSkincare",
       status: "Active",
       sales: 132,
       revenue: "₹48,900",
@@ -228,7 +246,7 @@ export default function DashboardOverview() {
     },
     {
       id: 3,
-      name: "Premium Cotton Sarees",
+      nameKey: "premiumCottonSarees",
       status: "Active",
       sales: 98,
       revenue: "₹38,200",
@@ -237,7 +255,7 @@ export default function DashboardOverview() {
     },
     {
       id: 4,
-      name: "Artisan Home Decor",
+      nameKey: "artisanHomeDecor",
       status: "Draft",
       sales: 0,
       revenue: "₹0",
@@ -267,16 +285,16 @@ export default function DashboardOverview() {
       >
         <div>
           <h1 className="text-3xl font-bold text-foreground">
-            Welcome Back, Priya!
+            {t.dashboard.welcome}
           </h1>
           <p className="text-sm text-foreground/70 mt-1">
-            Here's what's happening with your business today
+            {t.dashboard.subtitle}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Button className="bg-main hover:bg-main/90 shadow-lg shadow-main/30">
             <TrendingUp className="w-4 h-4 mr-2" />
-            View Analytics
+            {t.dashboard.viewAnalytics}
           </Button>
         </div>
       </motion.div>
@@ -351,16 +369,18 @@ export default function DashboardOverview() {
         <Card className="border-2 h-full hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-background to-secondary-background relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-40 h-40 bg-main/5 rounded-full blur-3xl" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Revenue Analytics</CardTitle>
+            <CardTitle className="text-base">
+              {t.dashboard.revenueAnalytics}
+            </CardTitle>
             <CardDescription className="text-xs">
-              Monthly revenue trends for the last 6 months
+              {t.dashboard.revenueAnalyticsDesc}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={revenueChartConfig}>
               <AreaChart
                 accessibilityLayer
-                data={revenueData}
+                data={localizedRevenueData}
                 margin={{
                   left: 12,
                   right: 12,
@@ -403,14 +423,16 @@ export default function DashboardOverview() {
         <Card className="border-2 h-full hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-background to-secondary-background relative overflow-hidden group">
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-chart-2/5 rounded-full blur-3xl" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Sales by Category</CardTitle>
+            <CardTitle className="text-base">
+              {t.dashboard.salesByCategory}
+            </CardTitle>
             <CardDescription className="text-xs">
-              Top performing product categories
+              {t.dashboard.salesByCategoryDesc}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={salesChartConfig}>
-              <BarChart accessibilityLayer data={salesData}>
+              <BarChart accessibilityLayer data={localizedSalesData}>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="category"
@@ -429,10 +451,10 @@ export default function DashboardOverview() {
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm pt-0">
             <div className="flex gap-2 leading-none font-medium">
-              Jewelry leading sales <TrendingUp className="h-4 w-4" />
+              {t.dashboard.jewelryLeading} <TrendingUp className="h-4 w-4" />
             </div>
             <div className="text-muted-foreground leading-none text-xs">
-              Based on last 30 days
+              {t.dashboard.basedOnLast30Days}
             </div>
           </CardFooter>
         </Card>
@@ -452,7 +474,7 @@ export default function DashboardOverview() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Recent Activity
+              {t.dashboard.recentActivity}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -473,12 +495,15 @@ export default function DashboardOverview() {
                       <span className="text-muted-foreground">
                         {activity.action}
                       </span>
-                      {activity.product && (
-                        <span className="font-medium"> {activity.product}</span>
+                      {activity.productKey && (
+                        <span className="font-medium">
+                          {" "}
+                          {t.dashboard.activityProducts[activity.productKey]}
+                        </span>
                       )}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.time}
+                      {t.dashboard.times[activity.timeKey]}
                       {activity.amount && (
                         <span className="ml-2 font-medium text-green-600">
                           {activity.amount}
@@ -504,15 +529,15 @@ export default function DashboardOverview() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Target className="h-4 w-4" />
-              Course Progress
+              {t.dashboard.courseProgress}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {learningProgress.map((course) => (
-              <div key={course.course} className="space-y-2">
+              <div key={course.courseKey} className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium truncate flex-1">
-                    {course.course}
+                    {t.dashboard.courses[course.courseKey]}
                   </span>
                   <span className="text-xs text-muted-foreground ml-2">
                     {course.progress}%
@@ -520,7 +545,7 @@ export default function DashboardOverview() {
                 </div>
                 <Progress value={course.progress} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  {course.students} students enrolled
+                  {t.dashboard.studentsEnrolled(course.students)}
                 </p>
               </div>
             ))}
@@ -542,14 +567,14 @@ export default function DashboardOverview() {
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
-                Product Management
+                {t.dashboard.productManagement}
               </CardTitle>
               <CardDescription className="text-xs mt-1">
-                View and manage your product listings
+                {t.dashboard.productManagementDesc}
               </CardDescription>
             </div>
             <Button size="sm" className="h-8">
-              Add Product
+              {t.dashboard.addProduct}
             </Button>
           </div>
         </CardHeader>
@@ -557,20 +582,20 @@ export default function DashboardOverview() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-xs">Product</TableHead>
-                <TableHead className="text-xs">Status</TableHead>
-                <TableHead className="text-xs">Sales</TableHead>
-                <TableHead className="text-xs">Revenue</TableHead>
-                <TableHead className="text-xs">Rating</TableHead>
-                <TableHead className="text-xs">Stock</TableHead>
-                <TableHead className="text-right text-xs">Actions</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.product}</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.status}</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.sales}</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.revenue}</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.rating}</TableHead>
+                <TableHead className="text-xs">{t.dashboard.table.stock}</TableHead>
+                <TableHead className="text-right text-xs">{t.dashboard.table.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium text-sm">
-                    {product.name}
+                    {t.dashboard.products[product.nameKey]}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -579,7 +604,7 @@ export default function DashboardOverview() {
                       }
                       className="text-xs"
                     >
-                      {product.status}
+                      {t.dashboard.statuses[product.status]}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm">{product.sales}</TableCell>
@@ -621,19 +646,24 @@ export default function DashboardOverview() {
                         </AlertDialogTrigger>
                         <AlertDialogContent className="border-2">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Product?</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t.dashboard.deleteProduct}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete {product.name}. This
-                              action cannot be undone.
+                              {t.dashboard.deleteDescription(
+                                t.dashboard.products[product.nameKey]
+                              )}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t.dashboard.cancel}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               className="bg-red-600 hover:bg-red-700"
                               onClick={() => handleDelete(product.id)}
                             >
-                              Delete
+                              {t.dashboard.delete}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -661,8 +691,12 @@ export default function DashboardOverview() {
               <ShoppingBag className="w-6 h-6 text-main" />
             </div>
             <div>
-              <h3 className="font-semibold">Create Product</h3>
-              <p className="text-sm text-foreground/60">Add new items to sell</p>
+              <h3 className="font-semibold">
+                {t.dashboard.quick.createProduct}
+              </h3>
+              <p className="text-sm text-foreground/60">
+                {t.dashboard.quick.createProductDesc}
+              </p>
             </div>
           </div>
         </Card>
@@ -673,8 +707,12 @@ export default function DashboardOverview() {
               <Award className="w-6 h-6 text-chart-2" />
             </div>
             <div>
-              <h3 className="font-semibold">Start Learning</h3>
-              <p className="text-sm text-foreground/60">Enroll in new courses</p>
+              <h3 className="font-semibold">
+                {t.dashboard.quick.startLearning}
+              </h3>
+              <p className="text-sm text-foreground/60">
+                {t.dashboard.quick.startLearningDesc}
+              </p>
             </div>
           </div>
         </Card>
@@ -685,8 +723,12 @@ export default function DashboardOverview() {
               <Users className="w-6 h-6 text-chart-3" />
             </div>
             <div>
-              <h3 className="font-semibold">Find Partners</h3>
-              <p className="text-sm text-foreground/60">Connect with vendors</p>
+              <h3 className="font-semibold">
+                {t.dashboard.quick.findPartners}
+              </h3>
+              <p className="text-sm text-foreground/60">
+                {t.dashboard.quick.findPartnersDesc}
+              </p>
             </div>
           </div>
         </Card>

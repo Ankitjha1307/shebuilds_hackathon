@@ -11,19 +11,25 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useLanguage } from "@/components/language-provider";
 
 export function DynamicBreadcrumb() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+  const segmentLabels: Record<string, string> = t.breadcrumb;
 
   // Generate breadcrumb items from pathname
   const pathSegments = pathname.split("/").filter((segment) => segment);
 
-  // Capitalize and format segment names
+  // Use translated labels when available, otherwise format the raw segment.
   const formatSegment = (segment: string) => {
-    return segment
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    return (
+      segmentLabels[segment] ??
+      segment
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    );
   };
 
   return (
@@ -34,7 +40,7 @@ export function DynamicBreadcrumb() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              <BreadcrumbLink href="/">{t.breadcrumb.home}</BreadcrumbLink>
             </BreadcrumbItem>
             {pathSegments.map((segment, index) => {
               const href = `/${pathSegments.slice(0, index + 1).join("/")}`;

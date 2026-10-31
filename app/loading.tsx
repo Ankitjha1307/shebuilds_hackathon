@@ -1,7 +1,12 @@
+"use client";
+
 import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/components/language-provider";
 
 export default function Loading() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="max-w-sm w-full border-2">
@@ -12,9 +17,9 @@ export default function Loading() {
             </div>
           </div>
           <div className="text-center space-y-2">
-            <h3 className=" text-lg font-semibold">Loading...</h3>
+            <h3 className=" text-lg font-semibold">{t.status.loading}</h3>
             <p className="text-sm text-muted-foreground">
-              Please wait while we prepare your content
+              {t.status.loadingDescription}
             </p>
           </div>
           <div className="flex gap-2">

@@ -4,28 +4,21 @@ import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Mic, MicOff, Send, Volume2, Sparkles, MessageSquare, BookOpen, TrendingUp } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EmotionalCanvas } from '@/components/emotional-canvas'
 import Image from 'next/image'
-
-const LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'hi', name: 'हिंदी' },
-  { code: 'ta', name: 'தமிழ்' },
-  { code: 'te', name: 'తెలుగు' },
-  { code: 'mr', name: 'मराठी' },
-  { code: 'bn', name: 'বাংলা' },
-]
+import { useLanguage } from '@/components/language-provider'
+import { LanguageToggle } from '@/components/language-toggle'
+import { LOCALES } from '@/lib/translations'
 
 const QUICK_TOPICS = [
-  { icon: TrendingUp, label: 'Business Ideas', query: 'Suggest profitable business ideas for me' },
-  { icon: BookOpen, label: 'Marketing Tips', query: 'How can I market my business effectively?' },
-  { icon: MessageSquare, label: 'Customer Service', query: 'Best practices for customer service' },
-  { icon: Sparkles, label: 'Pricing Strategy', query: 'How should I price my products?' },
-]
+  { icon: TrendingUp, key: 'businessIdeas' },
+  { icon: BookOpen, key: 'marketingTips' },
+  { icon: MessageSquare, key: 'customerService' },
+  { icon: Sparkles, key: 'pricingStrategy' },
+] as const
 
 type Message = {
   id: string
@@ -35,16 +28,16 @@ type Message = {
 }
 
 export default function AiMentorPage() {
+  const { language, t } = useLanguage()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: 'Namaste! I am Suno Sathi, your AI business mentor. How can I help you grow your business today?',
+      content: t.aiMentor.greeting,
       timestamp: new Date()
     }
   ])
   const [input, setInput] = useState('')
-  const [language, setLanguage] = useState('en')
   const [isRecording, setIsRecording] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [currentEmotion, setCurrentEmotion] = useState('calm')
@@ -57,6 +50,14 @@ export default function AiMentorPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.length === 1 && prev[0].role === 'assistant'
+        ? [{ ...prev[0], content: t.aiMentor.greeting }]
+        : prev
+    )
+  }, [language, t])
 
   const handleSendMessage = async () => {
     if (!input.trim()) return
@@ -76,11 +77,15 @@ export default function AiMentorPage() {
 
     // Detect emotion from input
     const lowerInput = userInput.toLowerCase()
-    if (lowerInput.includes('happy') || lowerInput.includes('excited') || lowerInput.includes('great')) {
+    const happyWords = ['happy', 'excited', 'great', 'खुश', 'उत्साहित', 'बढ़िया']
+    const focusedWords = ['help', 'problem', 'difficult', 'मदद', 'समस्या', 'मुश्किल']
+    const calmWords = ['thank', 'good', 'धन्यवाद', 'अच्छा', 'शुक्रिया']
+
+    if (happyWords.some((word) => lowerInput.includes(word))) {
       setCurrentEmotion('happy')
-    } else if (lowerInput.includes('help') || lowerInput.includes('problem') || lowerInput.includes('difficult')) {
+    } else if (focusedWords.some((word) => lowerInput.includes(word))) {
       setCurrentEmotion('focused')
-    } else if (lowerInput.includes('thank') || lowerInput.includes('good')) {
+    } else if (calmWords.some((word) => lowerInput.includes(word))) {
       setCurrentEmotion('calm')
     } else {
       setCurrentEmotion('focused')
@@ -121,8 +126,8 @@ export default function AiMentorPage() {
         role: 'assistant',
         content:
           error instanceof Error
-            ? `I could not fetch Gemini response: ${error.message}`
-            : 'I am facing a temporary issue. Please try again in a moment.',
+            ? t.aiMentor.errorWithMessage(error.message)
+            : t.aiMentor.error,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, aiResponse])
@@ -137,7 +142,7 @@ export default function AiMentorPage() {
       // Simulate voice recording
       setTimeout(() => {
         setIsRecording(false)
-        setInput('How can I increase my sales?')
+        setInput(t.aiMentor.simulatedVoiceInput)
       }, 2000)
     }
   }
@@ -168,26 +173,15 @@ export default function AiMentorPage() {
           <div className="relative z-10">
             <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-main" />
-              Suno Sathi - AI Mentor
+              {t.aiMentor.title}
             </h1>
-            <p className="text-foreground/70 mt-2">Your 24/7 business advisor in your language</p>
+            <p className="text-foreground/70 mt-2">{t.aiMentor.subtitle}</p>
           </div>
           <div className="flex items-center gap-3">
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map(lang => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    {lang.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <LanguageToggle />
             <Badge variant="neutral" className="text-sm">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-              Online
+              {t.aiMentor.online}
             </Badge>
           </div>
         </div>
@@ -196,7 +190,7 @@ export default function AiMentorPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {QUICK_TOPICS.map((topic, idx) => (
             <motion.div
-              key={idx}
+              key={topic.key}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
@@ -205,12 +199,16 @@ export default function AiMentorPage() {
             >
               <Card
                 className="p-4 cursor-pointer hover:border-main transition-all hover:shadow-lg hover:shadow-main/20 bg-gradient-to-br from-background to-secondary-background"
-                onClick={() => handleQuickTopic(topic.query)}
+                onClick={() =>
+                  handleQuickTopic(t.aiMentor.quickQueries[topic.key])
+                }
               >
                 <div className="p-2 bg-main/10 rounded-lg w-fit mb-2">
                   <topic.icon className="w-6 h-6 text-main" />
                 </div>
-                <p className="text-sm font-medium">{topic.label}</p>
+                <p className="text-sm font-medium">
+                  {t.aiMentor.quickTopics[topic.key]}
+                </p>
               </Card>
             </motion.div>
           ))}
@@ -244,7 +242,7 @@ export default function AiMentorPage() {
                   >
                     <p className="text-sm md:text-base">{message.content}</p>
                     <p className="text-xs opacity-70 mt-2">
-                      {message.timestamp.toLocaleTimeString('en-IN', {
+                      {message.timestamp.toLocaleTimeString(LOCALES[language], {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
@@ -286,7 +284,7 @@ export default function AiMentorPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Ask me anything about your business..."
+                placeholder={t.aiMentor.placeholder}
                 className="flex-1"
                 disabled={isRecording}
               />
@@ -297,7 +295,7 @@ export default function AiMentorPage() {
             {isRecording && (
               <p className="text-sm text-main mt-2 flex items-center gap-2">
                 <span className="w-2 h-2 bg-main rounded-full animate-pulse" />
-                Listening...
+                {t.aiMentor.listening}
               </p>
             )}
           </div>
@@ -307,18 +305,26 @@ export default function AiMentorPage() {
         <div className="grid md:grid-cols-3 gap-4">
           <Card className="p-4">
             <Volume2 className="w-8 h-8 text-main mb-2" />
-            <h3 className="font-semibold mb-1">Voice Support</h3>
-            <p className="text-sm text-foreground/70">Speak in your language, get instant voice responses</p>
+            <h3 className="font-semibold mb-1">{t.aiMentor.voiceSupport}</h3>
+            <p className="text-sm text-foreground/70">
+              {t.aiMentor.voiceSupportDesc}
+            </p>
           </Card>
           <Card className="p-4">
             <MessageSquare className="w-8 h-8 text-main mb-2" />
-            <h3 className="font-semibold mb-1">24/7 Available</h3>
-            <p className="text-sm text-foreground/70">Get business advice anytime, anywhere</p>
+            <h3 className="font-semibold mb-1">{t.aiMentor.available}</h3>
+            <p className="text-sm text-foreground/70">
+              {t.aiMentor.availableDesc}
+            </p>
           </Card>
           <Card className="p-4">
             <Sparkles className="w-8 h-8 text-main mb-2" />
-            <h3 className="font-semibold mb-1">Personalized Guidance</h3>
-            <p className="text-sm text-foreground/70">AI learns your business and provides tailored advice</p>
+            <h3 className="font-semibold mb-1">
+              {t.aiMentor.personalized}
+            </h3>
+            <p className="text-sm text-foreground/70">
+              {t.aiMentor.personalizedDesc}
+            </p>
           </Card>
         </div>
       </div>

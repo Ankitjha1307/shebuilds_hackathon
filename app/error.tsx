@@ -5,6 +5,7 @@ import { AlertCircle, RefreshCcw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
 
 export default function ErrorPage({
   error,
@@ -13,6 +14,8 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     // Log error to error reporting service in production
     if (process.env.NODE_ENV === "production") {
@@ -28,10 +31,10 @@ export default function ErrorPage({
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
           <CardTitle className="text-2xl font-heading">
-            Oops! Something went wrong
+            {t.status.errorTitle}
           </CardTitle>
           <CardDescription className="text-base">
-            We encountered an unexpected error. Don&apos;t worry, it&apos;s not your fault.
+            {t.status.errorDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -42,7 +45,7 @@ export default function ErrorPage({
               size="lg"
             >
               <RefreshCcw className="w-4 h-4" />
-              Try Again
+              {t.status.tryAgain}
             </Button>
             <Button
               asChild
@@ -52,12 +55,12 @@ export default function ErrorPage({
             >
               <Link href="/">
                 <Home className="w-4 h-4" />
-                Go Home
+                {t.status.goHome}
               </Link>
             </Button>
           </div>
           <p className="text-xs text-center text-muted-foreground">
-            If this problem persists, please contact support
+            {t.status.errorHelp}
           </p>
         </CardContent>
       </Card>
